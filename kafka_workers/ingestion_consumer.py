@@ -31,7 +31,6 @@ async def extract_text_from_pdf(document_path: str) -> str:
             return f.read().strip()
     else:
         reader = PdfReader(document_path)
-        
         text = ""
         for page in reader.pages:
             text += page.extract_text() or ""
