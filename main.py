@@ -1,8 +1,21 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.core.config import get_settings
+from contextlib import asynccontextmanager
+from app.db.postgres import init_db_pool, close_db_pool
+from app.db.qdrant import init_qdrant_client, close_qdrant_client
+
 
 settings = get_settings()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await init_db_pool()
+    await init_qdrant_client()
+    yield
+    
+    await close_db_pool()
+    await close_qdrant_client()
 
 app = FastAPI(
     title="Multi-Tenant E-commerce Support RAG",
@@ -11,6 +24,8 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc",
 )
+
+
 
 app.add_middleware(
     CORSMiddleware,
