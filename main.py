@@ -4,6 +4,7 @@ from app.core.config import get_settings
 from contextlib import asynccontextmanager
 from app.db.postgres import init_db_pool, close_db_pool
 from app.db.qdrant import init_qdrant_client, close_qdrant_client
+from app.db.prompt_registry import seed_default_prompts
 
 
 settings = get_settings()
@@ -12,6 +13,7 @@ settings = get_settings()
 async def lifespan(app: FastAPI):
     await init_db_pool()
     await init_qdrant_client()
+    await seed_default_prompts()
     yield
     
     await close_db_pool()
