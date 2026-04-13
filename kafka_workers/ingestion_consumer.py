@@ -25,11 +25,17 @@ EMBEDDING_BATCH_SIZE = 50
 
 async def extract_text_from_pdf(document_path: str) -> str:
     """Reads a PDF file and extracts all text"""
-    reader = PdfReader(document_path)
-    text = ""
-    for page in reader.pages:
-        text += page.extract_text() or ""
-    return text.strip()
+
+    if document_path.endswith('.txt'):
+        with open(document_path, 'r', encoding='utf-8') as f:
+            return f.read().strip()
+    else:
+        reader = PdfReader(document_path)
+        
+        text = ""
+        for page in reader.pages:
+            text += page.extract_text() or ""
+        return text.strip()
 
 
 async def chunk_text(text: str) -> list[str]:
