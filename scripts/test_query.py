@@ -10,11 +10,9 @@ from app.db.qdrant import init_qdrant_client
 
 
 async def test_query():
-    # Initialize clients
     await init_db_pool()
     await init_qdrant_client()
 
-    # Test query
     initial_state = {
         "tenant_id": "amazon",
         "query": "What is the return window for electronics?",

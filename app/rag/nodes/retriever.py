@@ -8,8 +8,7 @@ logger = logging.getLogger(__name__)
 settings = get_settings()
 
 EMBEDDING_MODEL = "text-embedding-3-small"
-TOP_K_RETRIEVAL = 10  # retrieve more, reranker will filter down to top 3-5
-
+TOP_K_RETRIEVAL = 10  
 
 async def retriever_node(state: RAGState) -> dict:
     """
@@ -32,7 +31,6 @@ async def retriever_node(state: RAGState) -> dict:
     tenant_id = state["tenant_id"]
     query = state["query"]
 
-    # Step 1: Embed query
     openai_client = AsyncOpenAI(api_key=settings.openai_api_key)
     response = await openai_client.embeddings.create(
         model=EMBEDDING_MODEL,
@@ -40,7 +38,6 @@ async def retriever_node(state: RAGState) -> dict:
     )
     query_embedding = response.data[0].embedding
 
-    # Step 2: Search Qdrant
     qdrant_client = get_qdrant_client()
     collection_name = get_collection_name(tenant_id)
 
@@ -51,7 +48,6 @@ async def retriever_node(state: RAGState) -> dict:
         with_payload=True,
     )
 
-    # Step 3: Format results
     chunks = [
         {
             "text": hit.payload.get("text", ""),

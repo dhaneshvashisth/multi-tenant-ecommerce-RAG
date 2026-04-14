@@ -35,7 +35,6 @@ async def citation_builder_node(state: RAGState) -> dict:
         for i, chunk in enumerate(reranked_chunks)
     ]
 
-    # Final response = raw response + citation note
     if citations:
         source_names = list({c["document_name"] for c in citations})
         final_response = raw_response

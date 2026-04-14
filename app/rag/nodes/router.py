@@ -28,7 +28,6 @@ async def router_node(state: RAGState) -> dict:
     tenant_id = state["tenant_id"]
     query = state["query"].strip()
 
-    # Check 1: Valid tenant
     if tenant_id not in VALID_TENANTS:
         logger.warning(f"Invalid tenant: {tenant_id}")
         return {
@@ -36,14 +35,12 @@ async def router_node(state: RAGState) -> dict:
             "router_message": f"Unknown tenant: {tenant_id}. Valid tenants are: {', '.join(VALID_TENANTS)}",
         }
 
-    # Check 2: Non-empty query
     if not query or len(query) < 5:
         return {
             "is_valid_query": False,
             "router_message": "Query is too short or empty. Please ask a complete question.",
         }
 
-    # Check 3: Relevance check (simple keyword filter)
     query_lower = query.lower()
     for keyword in IRRELEVANT_KEYWORDS:
         if keyword in query_lower:
