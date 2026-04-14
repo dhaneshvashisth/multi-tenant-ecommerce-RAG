@@ -30,7 +30,7 @@ async def citation_builder_node(state: RAGState) -> dict:
             "chunk_index": chunk.get("chunk_index", i),
             "document_name": chunk.get("document_name", "unknown"),
             "text_snippet": chunk["text"][:150] + "..." if len(chunk["text"]) > 150 else chunk["text"],
-            "rerank_score": round(chunk.get("rerank_score", 0.0), 4),
+            "rerank_score": float(round(chunk.get("rerank_score", 0.0), 4)),
         }
         for i, chunk in enumerate(reranked_chunks)
     ]
