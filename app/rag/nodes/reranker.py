@@ -4,9 +4,9 @@ from app.rag.state import RAGState
 
 logger = logging.getLogger(__name__)
 
-TOP_K_RERANK = 3  # final number of chunks passed to generator
+TOP_K_RERANK = 3 
 
-# Initialize FlashRank ranker once (model downloads on first use)
+
 _ranker: Ranker | None = None
 
 
@@ -43,7 +43,6 @@ async def reranker_node(state: RAGState) -> dict:
     query = state["query"]
     ranker = get_ranker()
 
-    # Format for FlashRank
     passages = [
         {"id": i, "text": chunk["text"]}
         for i, chunk in enumerate(chunks)
@@ -52,7 +51,6 @@ async def reranker_node(state: RAGState) -> dict:
     rerank_request = RerankRequest(query=query, passages=passages)
     results = ranker.rerank(rerank_request)
 
-    # Take top-K and map back to original chunk data
     top_results = results[:TOP_K_RERANK]
     reranked_chunks = [
         {

@@ -38,10 +38,8 @@ async def generator_node(state: RAGState) -> dict:
     reranked_chunks = state["reranked_chunks"]
     conversation_history = state.get("conversation_history", [])
 
-    # Step 1: Get system prompt
     system_prompt = await get_active_prompt(tenant_id)
 
-    # Step 2: Build context
     if reranked_chunks:
         context_parts = []
         for i, chunk in enumerate(reranked_chunks, 1):
@@ -52,26 +50,22 @@ async def generator_node(state: RAGState) -> dict:
     else:
         context = "No relevant policy information found."
 
-    # Step 3: Build messages
     messages = [{"role": "system", "content": system_prompt}]
 
-    # Inject conversation history (populated in Phase 4)
-    for turn in conversation_history[-4:]:  # last 4 turns max
+    for turn in conversation_history[-4:]: 
         messages.append(turn)
 
-    # Add current query with context
     messages.append({
         "role": "user",
         "content": f"Context:\n{context}\n\nQuestion: {query}",
     })
 
-    # Step 4: Call LLM
     openai_client = AsyncOpenAI(api_key=settings.openai_api_key)
     response = await openai_client.chat.completions.create(
         model=LLM_MODEL,
         messages=messages,
         max_tokens=MAX_TOKENS,
-        temperature=0.1,  # low temp = consistent, factual responses
+        temperature=0.1, 
     )
 
     raw_response = response.choices[0].message.content
