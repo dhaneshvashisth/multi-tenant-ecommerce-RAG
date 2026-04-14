@@ -112,6 +112,25 @@ services:
       - rag_network
     restart: on-failure
 
+  feedback_consumer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: feedback_consumer
+    command: python -m kafka_workers.feedback_consumer
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+    networks:
+      - rag_network
+    restart: on-failure
+
   api:
     build:
       context: .
