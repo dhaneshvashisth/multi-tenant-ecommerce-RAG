@@ -5,6 +5,8 @@ from contextlib import asynccontextmanager
 from app.db.postgres import init_db_pool, close_db_pool
 from app.db.qdrant import init_qdrant_client, close_qdrant_client
 from app.db.prompt_registry import seed_default_prompts
+from app.db.redis_client import init_redis_client, close_redis_client
+
 
 
 settings = get_settings()
@@ -14,10 +16,13 @@ async def lifespan(app: FastAPI):
     await init_db_pool()
     await init_qdrant_client()
     await seed_default_prompts()
+    await init_redis_client()
+
     yield
     
     await close_db_pool()
     await close_qdrant_client()
+    await close_redis_client()
 
 app = FastAPI(
     title="Multi-Tenant E-commerce Support RAG",
