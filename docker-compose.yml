@@ -131,6 +131,21 @@ services:
       - rag_network
     restart: on-failure
 
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: streamlit
+    command: streamlit run streamlit_app/app.py --server.port=8501 --server.address=0.0.0.0
+    depends_on:
+      - api
+    ports:
+      - "8501:8501"
+    volumes:
+      - .:/app
+    networks:
+      - rag_network
+
   api:
     build:
       context: .
