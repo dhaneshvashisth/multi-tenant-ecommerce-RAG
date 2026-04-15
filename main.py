@@ -5,6 +5,9 @@ from contextlib import asynccontextmanager
 from app.db.postgres import init_db_pool, close_db_pool
 from app.db.qdrant import init_qdrant_client, close_qdrant_client
 from app.db.prompt_registry import seed_default_prompts
+
+from app.api.routes import ingest, query, feedback, health
+
 from app.db.redis_client import init_redis_client, close_redis_client
 
 
@@ -30,6 +33,7 @@ app = FastAPI(
     version="1.0.0",
     docs_url="/docs",
     redoc_url="/redoc",
+    lifespan=lifespan,
 )
 
 
@@ -42,6 +46,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+app.include_router(health.router)
+app.include_router(ingest.router, prefix="/api/v1")
+app.include_router(query.router, prefix="/api/v1")
+app.include_router(feedback.router, prefix="/api/v1")
 
 @app.get("/health", tags=["Health"])
 async def health_check():
